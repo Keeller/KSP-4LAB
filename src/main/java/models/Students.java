@@ -58,5 +58,15 @@ public class Students {
     public void setYearBirth(int yearBirth) {
         this.yearBirth = yearBirth;
     }
+
+    public Students() {
+    }
+
+    public Students(int id, String name, String lastName, int yearBirth) {
+        this.id = id;
+        this.name = name;
+        this.lastName = lastName;
+        this.yearBirth = yearBirth;
+    }
 }
 

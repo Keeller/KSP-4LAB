@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <style>
+    *{padding: 0; margin: 0; box-sizing: border-box;}
+    body{height: 900px;}
+    header {
+    background: url('http://www.autodatz.com/wp-content/uploads/2017/05/Old-Car-Wallpapers-Hd-36-with-Old-Car-Wallpapers-Hd.jpg');
+    text-align: center;
+    width: 100%;
+    height: auto;
+    background-size: cover;
+    background-attachment: fixed;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 85% 85% / 30%;
+    }
+    header .overlay{
+    width: 100%;
+    height: 100%;
+    padding: 50px;
+    color: #FFF;
+    text-shadow: 1px 1px 1px #333;
+    background-image: linear-gradient( 135deg, #9f05ff69 10%, #fd5e086b 100%);
+
+    }
+
+    h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 80px;
+    margin-bottom: 30px;
+    }
+
+    h3, p {
+    font-family: 'Open Sans', sans-serif;
+    margin-bottom: 30px;
+    }
+
+    button {
+    border: none;
+    outline: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    color: #333;
+    background: #fff;
+    margin-bottom: 50px;
+    box-shadow: 0 3px 20px 0 #0000003b;
+    }
+    button:hover{
+    cursor: pointer;
+
+    </style>
+
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+  ${header}
+    <div id="root"></div>
+    <script type="text/babel">
+
+const Form=class UserForm extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {name: props.data.name,
+                      Lname:props.data.Lname,
+                      year:props.data.year,
+                      yv:true,
+                      nv:true,
+                      lv:true,
+                      fType:props.data.ftype,
+                      id:props.data.id
+                      };
+
+   
+        this.onChangeN = this.onChangeN.bind(this);
+        this.onChangeL = this.onChangeL.bind(this);
+        this.onChangeY = this.onChangeY.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+      }
+
+      validateN(name){
+        //console.log(name.len);
+        return name.length<255&&name.length>0;
+      }
+      validateL(lname){
+        return lname.length<255&&lname.length>0;
+      }
+      validateYear(year){
+      
+        return year>0;
+      }
+      onChangeN(e) {
+        var val = e.target.value;
+        var valid=this.validateN(val);
+        valid?this.setState({name: val,nv:true}):this.setState({nv:false});
+    }
+    onChangeL(e) {
+        var val = e.target.value;
+        var valid=this.validateL(val);
+        valid?this.setState({Lname: val,lv:true}):this.setState({lv:false});
+    }
+    onChangeY(e) {
+        var val = e.target.value;
+        var valid=this.validateYear(val);
+        valid?this.setState({year: val,yv:true}):this.setState({yv:false});
+    }
+    onChangei(e) {
+        var val = e.target.value;
+        this.setState({id:val});
+    }
+   
+    validate(){
+      return(this.state.yv&&this.state.lv&&this.state.nv);
+    }
+      handleSubmit(e) {
+        e.preventDefault();
+        if(this.validate()){
+          console.log(this.state);
+          if(this.state.fType){
+            let response=fetch("http://localhost:8081/St.jar",{
+            method:'POST',
+            body:'action=create&name='+this.state.name+'&LastName='+this.state.Lname+'&year='+this.state.year
+          });
+
+          }
+          else{
+            
+            let response=fetch("http://localhost:8081/St.jar",{
+            method:'POST',
+            body:'action=update&name='+this.state.name+'&LastName='+this.state.Lname+'&year='+this.state.year+'&id='+this.state.id
+          });
+        }
+      }
+      }
+   
+      render() {
+        return (
+            <form onSubmit={this.handleSubmit}>
+                <p>
+                   
+                    <label>Имя:</label><br />
+                    <input type="text" value={this.state.name} onChange={this.onChangeN}/><br/>
+                    <label>Фамилия:</label><br />
+                    <input type="text" value={this.state.Lname} onChange={this.onChangeL}/><br />
+                    <label>Год:</label><br />
+                    <input type="number" value={this.state.year} onChange={this.onChangeY} /><br />
+                </p>
+                <input type="submit" value="Отправить" />
+            </form>
+        );
+      }
+    }
+
+    const Thead=()=>(<thead><tr>
+              <td>id</td> 
+              <td> Name</td> 
+              <td>LastName</td> 
+              <td>Year</td>
+            </tr>
+            </thead>);
+
+    const Tbody=props=>(<tbody>
+             { /*console.log(props.records)*/}
+              {props.records.map((value,key)=>( 
+                 <tr>
+              <td>
+              {value.id}
+              </td>
+              <td>
+              { value.name}
+              </td>
+              <td>
+                {value.LastName}
+                </td>
+                <td>
+                {value.year}
+                </td>
+                <td>
+                <button onClick={()=>(props.cl(value.id))}>Delete</button>
+                <button onClick={()=>{
+                  props.mch({id:value.id,name:value.name,Lname:value.LastName,year:value.year,ftype:false});  
+                    }}>Update</button>
+                </td>
+            </tr>))}
+            </tbody>);
+    class Table extends React.Component{
+
+      state={
+        records:[]
+      };
+      
+      deleteHandler=(id)=>{
+
+        let response=fetch("http://localhost:8081/St.jar",{
+          method:'POST',
+          body:'action=delete&id='+id
+        });
+        this.setState({records:[]});
+
+      }
+
+     async componentDidMount(){
+        
+        let response=await fetch("http://localhost:8081/St.jar",{
+          method:'POST',
+          body:'action=all'
+        });
+        if(response.ok){
+          let str=await response.text();
+         
+          let arr=str.split(';');
+          arr=arr.map((value)=>{
+            value=value.split(" ")
+            return {id:value[0],name:value[1],LastName:value[2],year:value[3]};
+          });
+          arr.pop();
+          this.setState({records:arr});
+
+
+        }else{
+          alert(response.status);
+        }
+        
+
+
+      }
+
+      async componentDidUpdate(){
+        
+        let response=await fetch("http://localhost:8081/St.jar",{
+          method:'POST',
+          body:'action=all'
+        });
+        if(response.ok){
+          let str=await response.text();
+         
+          let arr=str.split(';');
+          arr=arr.map((value)=>{
+            value=value.split(" ")
+            return {id:value[0],name:value[1],LastName:value[2],year:value[3]};
+          });
+          arr.pop();
+          this.setState({records:arr});
+
+
+        }else{
+          alert(response.status);
+        }
+        
+
+
+      }
+
+      render(){
+      
+        return(
+        <div>
+        <table>
+            <Thead/>
+              <Tbody records={this.state.records} cl={this.deleteHandler.bind(this)} mch={this.props.mch} />
+             
+        </table>   
+        </div>
+        );
+      }
+
+    }    
+
+    class App extends React.Component{
+
+      state={
+        showModal:false,
+        
+        Data:{
+          id:null,
+          name:"",
+          Lname:"",
+          year:"",
+          ftype:true
+        }
+      };
+
+      constructor(props) {
+        super(props);
+        this.mch=this.modalChangeHandler.bind(this);
+        this.tch=()=>{
+          this.setState({t:!this.state.t});
+        };
+        this.tch=this.tch.bind(this);
+        }
+      modalChangeHandler(){
+        this.setState({Data:{id:null,
+          name:"",
+          Lname:"",
+          year:"",
+          ftype:true}});
+        this.setState({showModal:!this.state.showModal});
+      }
+      modalUpdateHandler(data)
+      {
+        this.setState({Data:data});
+        this.setState({showModal:true});
+
+      }
+
+
+      render(){
+        
+        return(
+        <center>
+        {!this.state.showModal&&<Table mch={this.modalUpdateHandler.bind(this)}/>}
+       {this.state.showModal&&<Form  data={this.state.Data}/>}
+       <button onClick={this.mch}>Create</button>
+       
+        </center>
+        );
+      }
+    }
+
+      ReactDOM.render(
+        <App/>,
+        document.getElementById('root')
+      );
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      Read this section for a production-ready setup with JSX:
+      https://reactjs.org/docs/add-react-to-a-website.html#add-jsx-to-a-project
+
+      In a larger project, you can use an integrated toolchain that includes JSX instead:
+      https://reactjs.org/docs/create-a-new-react-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      https://reactjs.org/docs/react-without-jsx.html
+    -->
+  </body>
+</html>

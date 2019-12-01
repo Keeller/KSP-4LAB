@@ -42,6 +42,6 @@ public class StudentsImpl implements StudntsDAO {
     }
 
     public List<Students> findAll(){
-        return (List<Students>)HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("FROM student").list();
+        return (List<Students>)HibernateSessionFactoryUtil.getSessionFactory().openSession().createQuery("FROM Students").list();
     }
 }
